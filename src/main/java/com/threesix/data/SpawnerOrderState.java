@@ -1,0 +1,22 @@
+package com.threesix.data;
+
+import com.threesix.util.XorBitUtils;
+import com.threesix.util.StringVaultDecoder;
+
+public enum SpawnerOrderState {
+   SPAWNER_OPEN_MENU,
+   SPAWNER_WAIT_MENU,
+   SPAWNER_SCAN_GRID,
+   SPAWNER_CLICK_DROPPER,
+   SPAWNER_WAIT_DROP_CONFIRM,
+   SPAWNER_DONE,
+   ORDERS_SEND_COMMAND,
+   ORDERS_WAIT_MENU,
+   ORDERS_CLICK_CHEST_ONE,
+   ORDERS_CLICK_BONE,
+   ORDERS_CLICK_CHEST_TWO,
+   ORDERS_CLICK_DROPPER_ONE,
+   ORDERS_CLICK_ARROW,
+   ORDERS_CLICK_DROPPER_TWO;
+
+}

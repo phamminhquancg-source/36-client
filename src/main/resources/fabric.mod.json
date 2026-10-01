@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "id": "threesix",
+  "version": "1.0.0",
+  "name": "sodiumv2",
+  "description": "boostfps",
+  "authors": [
+    "locus"
+  ],
+  "contact": {},
+  "license": "CC0-1.0",
+  "icon": "assets/threesix/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "preLaunch": [
+      "com.threesix.internal.ThreesixClientInit"
+    ],
+    "main": [
+      "com.threesix.internal.ThreesixClientInit"
+    ],
+    "client": [
+      "com.threesix.internal.ThreesixClientInit"
+    ]
+  },
+  "mixins": [
+    "threesix.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.4",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "jars": [
+    {
+      "file": "META-INF/jars/lwjgl-nanovg-3.3.3-natives-linux-arm64.jar"
+    },
+    {
+      "file": "META-INF/jars/lwjgl-nanovg-3.3.3-natives-linux.jar"
+    },
+    {
+      "file": "META-INF/jars/lwjgl-nanovg-3.3.3-natives-macos-arm64.jar"
+    },
+    {
+      "file": "META-INF/jars/lwjgl-nanovg-3.3.3-natives-macos.jar"
+    },
+    {
+      "file": "META-INF/jars/lwjgl-nanovg-3.3.3-natives-windows-arm64.jar"
+    },
+    {
+      "file": "META-INF/jars/lwjgl-nanovg-3.3.3-natives-windows.jar"
+    },
+    {
+      "file": "META-INF/jars/lwjgl-nanovg-3.3.3.jar"
+    }
+  ]
+}
