@@ -1,0 +1,97 @@
+plugins {
+	id 'fabric-loom' version '1.16.3'
+	id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+	archivesName = project.archives_base_name
+}
+
+repositories {
+	mavenCentral()
+}
+
+loom {
+	// Loom 1.16 no longer enables the mixin annotation processor by default, so
+	// without this no refmap is produced and every mixin target stays named-only.
+	mixin {
+		useLegacyMixinAp = true
+		defaultRefmapName = "threesix-refmap.json"
+	}
+	// the two litematica mixins are guarded at runtime by ThreesixMixinPlugin and
+	// litematica/malilib are not on the compile classpath, so they stay excluded.
+	runs {
+		client {
+			client()
+			ideConfigGenerated = true
+		}
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	// the mod links against nanovg, which MC no longer ships on the compile classpath
+	implementation "org.lwjgl:lwjgl-nanovg:3.3.3"
+	implementation "org.lwjgl:lwjgl-nanovg:3.3.3:natives-windows"
+}
+
+processResources {
+	inputs.property 'version', project.version
+
+	filesMatching('fabric.mod.json') {
+		expand version: project.version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 21
+	it.options.encoding = 'UTF-8'
+	// the decompiler emits raw types and unchecked casts everywhere
+	it.options.compilerArgs << '-Xlint:none'
+	it.options.compilerArgs.addAll(['-Xmaxerrs', '100000'])
+	// The two litematica mixins @Mixin(targets = "fi/dy/masa/litematica/...") point at
+	// classes that are deliberately not on the compile classpath, and ThreesixMixinPlugin
+	// skips them at runtime. The AP would abort the build on the unresolvable soft target,
+	// so downgrade that one message. Note: loom.mixin.messages does NOT reach javac in
+	// Loom 1.16.3 -- the option has to be passed here.
+	if (loom.mixin.useLegacyMixinAp.get()) {
+		it.options.compilerArgs << '-AMSG_MIXIN_SOFT_TARGET_NOT_FOUND=warning'
+	}
+}
+
+// prints the compile classpath so the error-fix loop can use plain javac
+tasks.register('printCompileClasspath') {
+	doLast {
+		def f = new File(project.layout.buildDirectory.get().asFile, 'compile-cp.txt')
+		f.parentFile.mkdirs()
+		f.text = sourceSets.main.compileClasspath.files.join(File.pathSeparator)
+		println "wrote " + f
+	}
+}
+
+java {
+	withSourcesJar()
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+	from('LICENSE') {
+		rename { "${it}_${project.base.archivesName.get()}" }
+	}
+}
+
+publishing {
+	publications {
+		create('mavenJava', MavenPublication) {
+			artifactId = project.archives_base_name
+			from components.java
+		}
+	}
+}
